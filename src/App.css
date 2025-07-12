@@ -1,0 +1,59 @@
+.auth-page {
+  height: 100vh;
+  background-image: url('https://e0.pxfuel.com/wallpapers/151/526/desktop-wallpaper-magic-forest-roots-28309-magical-forest.jpg');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-box {
+  background: rgba(0, 0, 0, 0.65);
+  padding: 2rem 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  color: white;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+}
+
+.auth-box h2 {
+  margin-bottom: 1rem;
+}
+
+.auth-box input {
+  width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.auth-box button {
+  padding: 0.6rem 1.2rem;
+  background: teal;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.auth-box button:hover {
+  background: #007777;
+}
+
+.auth-box p {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.auth-box a {
+  color: #00ffff;
+  text-decoration: underline;
+}
