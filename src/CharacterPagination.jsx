@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import "./CharacterPagination.css";
 
 const API_URL = "https://rickandmortyapi.com/api/character";
 const STAR_ICON = "https://static.thenounproject.com/png/542578-200.png";
 
-export const CharacterPagination = ({ onLogout }) => {
+export const CharacterPagination = () => {
   const [characters, setCharacters] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [query, setQuery] = useState("");
@@ -14,16 +14,12 @@ export const CharacterPagination = ({ onLogout }) => {
   const [genderFilter, setGenderFilter] = useState("all");
   const [favorites, setFavorites] = useState([]);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
-
-  const [, forceUpdate] = useState(0);
-  const currentPageRef = useRef(1);
-
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    const fetchCharacters = async (page = 1) => {
+    const fetchCharacters = async () => {
       try {
-        let url = `${API_URL}/?page=${page}&name=${query}`;
+        let url = `${API_URL}/?page=${currentPage}&name=${query}`;
         if (genderFilter !== "all") {
           url += `&gender=${genderFilter}`;
         }
@@ -46,13 +42,12 @@ export const CharacterPagination = ({ onLogout }) => {
       }
     };
 
-    fetchCharacters(currentPageRef.current);
-  }, [currentPageRef.current, query, sortOrder, genderFilter]);
+    fetchCharacters();
+  }, [currentPage, query, sortOrder, genderFilter]);
 
   const goToPage = (pageNum) => {
     if (pageNum < 1 || pageNum > totalPages) return;
-    currentPageRef.current = pageNum;
-    forceUpdate((n) => n + 1);
+    setCurrentPage(pageNum);
   };
 
   const toggleFavorite = (id) => {
@@ -73,16 +68,6 @@ export const CharacterPagination = ({ onLogout }) => {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Rick_and_Morty.svg/800px-Rick_and_Morty.svg.png"
             alt="Rick and Morty"
           />
-        </div>
-
-        {/* 🔐 Show logged in user & logout */}
-        <div style={{ display: "flex", justifyContent: "space-between", width: "90%", marginBottom: "1rem" }}>
-          <div style={{ color: "#ccc", fontSize: "0.9rem" }}>
-            Logged in as: <strong>{user?.email}</strong>
-          </div>
-          <button className="control-btn" onClick={onLogout}>
-            Logout
-          </button>
         </div>
 
         <div className="search-wrapper">
@@ -134,36 +119,40 @@ export const CharacterPagination = ({ onLogout }) => {
       </header>
 
       <main className={isGridView ? "grid" : "list"}>
-        {filteredCharacters.map((char) => (
-          <div
-            key={char.id}
-            className="card"
-            onClick={(e) => {
-              if (e.target.classList.contains("star")) return;
-              setSelectedCharacter(char);
-            }}
-          >
-            <div className="fav-star">
-              <img
-                src={STAR_ICON}
-                alt="star"
-                className={`star ${favorites.includes(char.id) ? "favorite" : ""}`}
-                onClick={() => toggleFavorite(char.id)}
-              />
+        {filteredCharacters.length === 0 ? (
+          <p style={{ color: "white" }}>Loading characters...</p>
+        ) : (
+          filteredCharacters.map((char) => (
+            <div
+              key={char.id}
+              className="card"
+              onClick={(e) => {
+                if (e.target.classList.contains("star")) return;
+                setSelectedCharacter(char);
+              }}
+            >
+              <div className="fav-star">
+                <img
+                  src={STAR_ICON}
+                  alt="star"
+                  className={`star ${favorites.includes(char.id) ? "favorite" : ""}`}
+                  onClick={() => toggleFavorite(char.id)}
+                />
+              </div>
+              <img src={char.image} alt={char.name} />
+              <h3>{char.name}</h3>
+              <p>Status: {char.status}</p>
+              <p>Species: {char.species}</p>
+              <p>Gender: {char.gender}</p>
             </div>
-            <img src={char.image} alt={char.name} />
-            <h3>{char.name}</h3>
-            <p>Status: {char.status}</p>
-            <p>Species: {char.species}</p>
-            <p>Gender: {char.gender}</p>
-          </div>
-        ))}
+          ))
+        )}
       </main>
 
       <div className="pagination">
         <button
-          onClick={() => goToPage(currentPageRef.current - 1)}
-          disabled={currentPageRef.current === 1}
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 1}
         >
           Previous
         </button>
@@ -173,15 +162,15 @@ export const CharacterPagination = ({ onLogout }) => {
             <button
               key={pageNum}
               onClick={() => goToPage(pageNum)}
-              className={pageNum === currentPageRef.current ? "active" : ""}
+              className={pageNum === currentPage ? "active" : ""}
             >
               {pageNum}
             </button>
           );
         })}
         <button
-          onClick={() => goToPage(currentPageRef.current + 1)}
-          disabled={currentPageRef.current === totalPages}
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
         >
           Next
         </button>
